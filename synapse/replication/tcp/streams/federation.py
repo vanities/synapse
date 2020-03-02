@@ -15,7 +15,9 @@
 # limitations under the License.
 from collections import namedtuple
 
-from ._base import Stream
+from twisted.internet import defer
+
+from synapse.replication.tcp.streams._base import Stream
 
 FederationStreamRow = namedtuple(
     "FederationStreamRow",
@@ -33,11 +35,16 @@ class FederationStream(Stream):
 
     NAME = "federation"
     ROW_TYPE = FederationStreamRow
+    _QUERY_MASTER = True
 
     def __init__(self, hs):
-        federation_sender = hs.get_federation_sender()
-
-        self.current_token = federation_sender.get_current_token  # type: ignore
-        self.update_function = federation_sender.get_replication_rows  # type: ignore
+        if hs.should_send_federation() or hs.config.worker_app is None:
+            federation_sender = hs.get_federation_sender()
+            self.current_token = federation_sender.get_current_token  # type: ignore
+            if hs.config.worker_app is None:
+                self.update_function = federation_sender.get_replication_rows  # type: ignore
+        else:
+            self.current_token = lambda: 0  # type: ignore
+            self.update_function = lambda *args, **kwargs: defer.succeed([])  # type: ignore
 
         super(FederationStream, self).__init__(hs)
