@@ -500,3 +500,8 @@ class FederationSender(object):
 
     def get_current_token(self) -> int:
         return 0
+
+    async def get_replication_rows(
+        self, from_token, to_token, limit, federation_ack=None
+    ):
+        return []

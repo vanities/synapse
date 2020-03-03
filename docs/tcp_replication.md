@@ -39,7 +39,7 @@ noted when manually using the protocol:
     been disabled on the main process.
 -   The server will only time connections out that have sent a `PING`
     command. If a ping is sent then the connection will be closed if no
-    further commands are receieved within 15s. Both the client and
+    further commands are received within 15s. Both the client and
     server protocol implementations will send an initial PING on
     connection and ensure at least one command every 5s is sent (not
     necessarily `PING`).

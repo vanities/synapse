@@ -38,11 +38,10 @@ class FederationStream(Stream):
     _QUERY_MASTER = True
 
     def __init__(self, hs):
-        if hs.should_send_federation() or hs.config.worker_app is None:
+        if hs.config.worker_app is None or hs.should_send_federation():
             federation_sender = hs.get_federation_sender()
             self.current_token = federation_sender.get_current_token  # type: ignore
-            if hs.config.worker_app is None:
-                self.update_function = federation_sender.get_replication_rows  # type: ignore
+            self.update_function = federation_sender.get_replication_rows  # type: ignore
         else:
             self.current_token = lambda: 0  # type: ignore
             self.update_function = lambda *args, **kwargs: defer.succeed([])  # type: ignore
