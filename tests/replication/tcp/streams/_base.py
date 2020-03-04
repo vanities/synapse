@@ -91,9 +91,6 @@ class TestReplicationClientHandler(object):
     def get_currently_syncing_users(self):
         return []
 
-    def update_connection(self, connection):
-        pass
-
     def finished_connecting(self):
         pass
 
@@ -103,3 +100,21 @@ class TestReplicationClientHandler(object):
     async def on_rdata(self, stream_name, token, rows):
         for r in rows:
             self._received_rdata_rows.append((stream_name, token, r))
+
+    def new_connection(self, connection):
+        pass
+
+    def lost_connection(self, connection):
+        pass
+
+    def on_user_sync(self, conn_id, user_id, is_syncing, last_sync_ms):
+        pass
+
+    def federation_ack(self, token):
+        pass
+
+    def on_remove_pusher(self, app_id, push_key, user_id):
+        pass
+
+    def on_invalidate_cache(self, cache_func, keys):
+        pass

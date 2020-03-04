@@ -592,7 +592,7 @@ class GenericWorkerServer(HomeServer):
 
 class GenericWorkerReplicationHandler(ReplicationClientHandler):
     def __init__(self, hs):
-        super(GenericWorkerReplicationHandler, self).__init__(hs.get_datastore())
+        super(GenericWorkerReplicationHandler, self).__init__(hs)
 
         self.store = hs.get_datastore()
         self.typing_handler = hs.get_typing_handler()

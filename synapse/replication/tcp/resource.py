@@ -55,10 +55,11 @@ class ReplicationStreamProtocolFactory(Factory):
         self.streamer = ReplicationStreamer(hs)
         self.clock = hs.get_clock()
         self.server_name = hs.config.server_name
+        self.hs = hs
 
     def buildProtocol(self, addr):
         return ServerReplicationStreamProtocol(
-            self.server_name, self.clock, self.streamer
+            self.hs, self.server_name, self.clock, self.streamer
         )
 
 
@@ -323,6 +324,12 @@ class ReplicationStreamer(object):
             self.presence_handler.update_external_syncs_clear,
             connection.conn_id,
         )
+
+    def get_currently_syncing_users(self):
+        return []
+
+    def get_streams_to_replicate(self):
+        return {}
 
 
 def _batch_updates(updates):

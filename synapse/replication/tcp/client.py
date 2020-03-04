@@ -112,6 +112,28 @@ class ReplicationClientHandler(AbstractReplicationClientHandler):
         port = hs.config.worker_replication_port
         hs.get_reactor().connectTCP(host, port, self.factory)
 
+    def new_connection(self, connection):
+        self.connection = connection
+        if connection:
+            for cmd in self.pending_commands:
+                connection.send_command(cmd)
+            self.pending_commands = []
+
+    def lost_connection(self, connection):
+        self.connection = None
+
+    def on_user_sync(self, conn_id, user_id, is_syncing, last_sync_ms):
+        pass
+
+    def federation_ack(self, token):
+        pass
+
+    def on_remove_pusher(self, app_id, push_key, user_id):
+        pass
+
+    def on_invalidate_cache(self, cache_func, keys):
+        pass
+
     async def on_rdata(self, stream_name, token, rows):
         """Called to handle a batch of replication data with a given stream token.
 
@@ -222,15 +244,6 @@ class ReplicationClientHandler(AbstractReplicationClientHandler):
         [Not currently] used by tests.
         """
         return self.awaiting_syncs.setdefault(data, defer.Deferred())
-
-    def update_connection(self, connection):
-        """Called when a connection has been established (or lost with None).
-        """
-        self.connection = connection
-        if connection:
-            for cmd in self.pending_commands:
-                connection.send_command(cmd)
-            self.pending_commands = []
 
     def finished_connecting(self):
         """Called when we have successfully subscribed and caught up to all
